@@ -130,6 +130,34 @@ input {
   gap: 12px;
 }
 
+.validation-panel {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.validation-message {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.validation-message.error {
+  border-color: rgba(239, 106, 77, 0.45);
+  background: rgba(239, 106, 77, 0.1);
+  color: #a83e2a;
+}
+
+.validation-message.warning {
+  border-color: rgba(201, 145, 29, 0.45);
+  background: rgba(201, 145, 29, 0.1);
+  color: #835b11;
+}
+
 .field {
   display: grid;
   grid-template-columns: minmax(132px, 0.42fr) minmax(0, 0.58fr);

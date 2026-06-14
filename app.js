@@ -25,6 +25,7 @@ const moneyFields = [
 ];
 
 const output = {
+  validationPanel: document.querySelector("#validation-panel"),
   targetDate: document.querySelector("#target-date"),
   targetDateNote: document.querySelector("#target-date-note"),
   remainingPeriod: document.querySelector("#remaining-period"),
@@ -61,6 +62,65 @@ function readInputs() {
     optimisticRate: readNumber(fields.optimisticRate),
     pessimisticRate: readNumber(fields.pessimisticRate),
   };
+}
+
+function validateInputs(inputs) {
+  const messages = [];
+
+  if (inputs.targetAssets <= inputs.currentAssets) {
+    messages.push({
+      type: "error",
+      text: "目標資産額は現在資産額より大きくしてください。",
+    });
+  }
+
+  if (inputs.monthlyContribution === 0) {
+    messages.push({
+      type: "warning",
+      text: "毎月追加投資額が0円です。利回りだけで到達する前提になります。",
+    });
+  }
+
+  [
+    ["標準シナリオ年利", inputs.standardRate],
+    ["楽観シナリオ年利", inputs.optimisticRate],
+    ["悲観シナリオ年利", inputs.pessimisticRate],
+  ].forEach(([label, rate]) => {
+    if (rate !== null && rate <= -100) {
+      messages.push({
+        type: "error",
+        text: `${label}は-100%より大きい値にしてください。`,
+      });
+    }
+  });
+
+  if (inputs.optimisticRate !== null && inputs.optimisticRate < inputs.standardRate) {
+    messages.push({
+      type: "warning",
+      text: "楽観シナリオ年利は標準シナリオ以上にすると比較しやすくなります。",
+    });
+  }
+
+  if (inputs.pessimisticRate !== null && inputs.pessimisticRate > inputs.standardRate) {
+    messages.push({
+      type: "warning",
+      text: "悲観シナリオ年利は標準シナリオ以下にすると比較しやすくなります。",
+    });
+  }
+
+  return messages;
+}
+
+function updateValidationPanel(messages) {
+  output.validationPanel.hidden = messages.length === 0;
+  output.validationPanel.replaceChildren(
+    ...messages.map((message) => {
+      const item = document.createElement("p");
+      item.className = `validation-message ${message.type}`;
+      item.textContent = message.text;
+      return item;
+    }),
+  );
 }
 
 function interpolateAchievementDays(previousAssets, currentAssets, targetAssets, month) {
@@ -658,6 +718,7 @@ function updateScenarioLegend(scenarios) {
 
 function render() {
   const inputs = readInputs();
+  updateValidationPanel(validateInputs(inputs));
   const scenarios = buildScenarios(inputs);
   const standard = scenarios.find((scenario) => scenario.key === "standard");
 
