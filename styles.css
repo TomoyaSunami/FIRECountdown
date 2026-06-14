@@ -391,10 +391,23 @@ svg {
   height: 320px;
 }
 
+#scenario-chart {
+  height: 340px;
+}
+
 .axis-label {
   fill: #66736e;
   font-size: 11px;
   font-weight: 700;
+}
+
+.achievement-axis-label {
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.achievement-line {
+  pointer-events: none;
 }
 
 .chart-empty {

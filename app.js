@@ -519,10 +519,30 @@ function linePath(points) {
     .join(" ");
 }
 
+function formatAchievementMonthLabel(days) {
+  if (days === 0) {
+    return "達成済み";
+  }
+
+  const totalMonths = Math.max(0, Math.round(days / DAYS_PER_MONTH));
+  const years = Math.floor(totalMonths / 12);
+  const months = totalMonths % 12;
+  const parts = [];
+
+  if (years > 0) {
+    parts.push(`${years}年`);
+  }
+  if (months > 0 || parts.length === 0) {
+    parts.push(`${months}か月`);
+  }
+
+  return `${parts.join("")}後`;
+}
+
 function drawScenarioChart(scenarios, targetAssets) {
   const svg = output.scenarioChart;
   clearSvg(svg);
-  setViewBox(svg, 720, 320);
+  setViewBox(svg, 720, 340);
 
   const histories = scenarios.map((scenario) => ({
     ...scenario,
@@ -534,7 +554,7 @@ function drawScenarioChart(scenarios, targetAssets) {
     return;
   }
 
-  const plot = { left: 68, right: 694, top: 26, bottom: 270 };
+  const plot = { left: 68, right: 694, top: 26, bottom: 258 };
   plot.width = plot.right - plot.left;
   plot.height = plot.bottom - plot.top;
   const maxMonth = Math.max(...allPoints.map((point) => point.month), 1);
@@ -579,11 +599,43 @@ function drawScenarioChart(scenarios, targetAssets) {
     );
   });
 
+  histories
+    .filter(({ result }) => result.reached)
+    .forEach(({ key, result }, index) => {
+      const meta = scenarioMeta[key];
+      const achievementMonth = result.days / DAYS_PER_MONTH;
+      const x = plot.left + (achievementMonth / maxMonth) * plot.width;
+      const labelX = Math.min(plot.right - 4, Math.max(plot.left + 4, x));
+      const textAnchor = labelX > plot.right - 80 ? "end" : labelX < plot.left + 80 ? "start" : "middle";
+
+      svg.append(
+        createSvgElement("line", {
+          x1: x,
+          y1: plot.top,
+          x2: x,
+          y2: plot.bottom,
+          stroke: meta.color,
+          "stroke-width": "2",
+          "stroke-dasharray": "5 7",
+          opacity: "0.72",
+          class: "achievement-line",
+        }),
+      );
+
+      addText(svg, `${meta.label} ${formatAchievementMonthLabel(result.days)}`, {
+        x: labelX,
+        y: 304 + index * 14,
+        "text-anchor": textAnchor,
+        fill: meta.color,
+        class: "achievement-axis-label",
+      });
+    });
+
   [0, Math.round(maxMonth / 2), maxMonth].forEach((month, index) => {
     const x = plot.left + (month / maxMonth) * plot.width;
     addText(svg, `${Math.round(month / 12)}年`, {
       x,
-      y: 296,
+      y: 282,
       "text-anchor": index === 0 ? "start" : index === 2 ? "end" : "middle",
       class: "axis-label",
     });
