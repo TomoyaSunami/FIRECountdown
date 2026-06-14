@@ -546,7 +546,7 @@ function drawScenarioChart(scenarios, targetAssets) {
 
   const histories = scenarios.map((scenario) => ({
     ...scenario,
-    points: yearlyPoints(scenario.result.history).slice(0, 28),
+    points: yearlyPoints(scenario.result.history),
   }));
   const allPoints = histories.flatMap((scenario) => scenario.points);
 
