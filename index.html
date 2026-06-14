@@ -36,7 +36,7 @@
             <label class="field">
               <span>現在資産額</span>
               <span class="input-wrap">
-                <input id="current-assets" name="currentAssets" type="number" min="0" step="10000" value="30000000" required>
+                <input id="current-assets" name="currentAssets" type="text" inputmode="numeric" pattern="[0-9,]*" value="30,000,000" required>
                 <span>円</span>
               </span>
             </label>
@@ -44,7 +44,15 @@
             <label class="field">
               <span>毎月追加投資額</span>
               <span class="input-wrap">
-                <input id="monthly-contribution" name="monthlyContribution" type="number" min="0" step="10000" value="300000" required>
+                <input id="monthly-contribution" name="monthlyContribution" type="text" inputmode="numeric" pattern="[0-9,]*" value="300,000" required>
+                <span>円</span>
+              </span>
+            </label>
+
+            <label class="field">
+              <span>短縮効果の追加投資額</span>
+              <span class="input-wrap">
+                <input id="extra-investment" name="extraInvestment" type="text" inputmode="numeric" pattern="[0-9,]*" value="10,000" required>
                 <span>円</span>
               </span>
             </label>
@@ -52,7 +60,7 @@
             <label class="field">
               <span>目標資産額</span>
               <span class="input-wrap">
-                <input id="target-assets" name="targetAssets" type="number" min="0" step="10000" value="100000000" required>
+                <input id="target-assets" name="targetAssets" type="text" inputmode="numeric" pattern="[0-9,]*" value="100,000,000" required>
                 <span>円</span>
               </span>
             </label>
@@ -101,7 +109,7 @@
               <strong id="remaining-period">-</strong>
             </div>
             <div class="metric-card accent">
-              <span class="metric-label">1万円短縮効果</span>
+              <span class="metric-label" id="days-saved-label">追加投資短縮効果</span>
               <strong id="days-saved">-</strong>
             </div>
           </div>

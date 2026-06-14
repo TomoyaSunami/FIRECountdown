@@ -1,6 +1,5 @@
 const DAYS_PER_MONTH = 30.4375;
 const MAX_MONTHS = 1200;
-const EXTRA_INVESTMENT = 10000;
 
 const scenarioMeta = {
   optimistic: { label: "楽観", color: "#23b083" },
@@ -11,16 +10,25 @@ const scenarioMeta = {
 const fields = {
   currentAssets: document.querySelector("#current-assets"),
   monthlyContribution: document.querySelector("#monthly-contribution"),
+  extraInvestment: document.querySelector("#extra-investment"),
   targetAssets: document.querySelector("#target-assets"),
   standardRate: document.querySelector("#standard-rate"),
   optimisticRate: document.querySelector("#optimistic-rate"),
   pessimisticRate: document.querySelector("#pessimistic-rate"),
 };
 
+const moneyFields = [
+  fields.currentAssets,
+  fields.monthlyContribution,
+  fields.extraInvestment,
+  fields.targetAssets,
+];
+
 const output = {
   targetDate: document.querySelector("#target-date"),
   targetDateNote: document.querySelector("#target-date-note"),
   remainingPeriod: document.querySelector("#remaining-period"),
+  daysSavedLabel: document.querySelector("#days-saved-label"),
   daysSaved: document.querySelector("#days-saved"),
   finalAssets: document.querySelector("#final-assets"),
   totalPrincipal: document.querySelector("#total-principal"),
@@ -36,14 +44,20 @@ function readNumber(input) {
     return null;
   }
 
-  const value = Number(input.value);
+  const value = Number(input.value.replace(/,/g, ""));
   return Number.isFinite(value) ? value : null;
+}
+
+function formatMoneyInput(input) {
+  const digits = input.value.replace(/[^\d]/g, "");
+  input.value = digits === "" ? "" : new Intl.NumberFormat("ja-JP").format(Number(digits));
 }
 
 function readInputs() {
   return {
     currentAssets: Math.max(0, readNumber(fields.currentAssets) ?? 0),
     monthlyContribution: Math.max(0, readNumber(fields.monthlyContribution) ?? 0),
+    extraInvestment: Math.max(0, readNumber(fields.extraInvestment) ?? 0),
     targetAssets: Math.max(0, readNumber(fields.targetAssets) ?? 0),
     standardRate: readNumber(fields.standardRate) ?? 0,
     optimisticRate: readNumber(fields.optimisticRate),
@@ -190,6 +204,14 @@ function formatRate(value) {
   }).format(value)}%`;
 }
 
+function formatShortMoney(value) {
+  const rounded = Math.round(value);
+  if (rounded >= 10000 && rounded % 10000 === 0) {
+    return `${new Intl.NumberFormat("ja-JP").format(rounded / 10000)}万円`;
+  }
+  return `${new Intl.NumberFormat("ja-JP").format(rounded)}円`;
+}
+
 function formatPeriod(days) {
   if (days === null) {
     return "到達見込みなし";
@@ -248,11 +270,14 @@ function updateMainResults(inputs, standardResult) {
   }
 
   const boosted = simulate({
-    currentAssets: inputs.currentAssets + EXTRA_INVESTMENT,
+    currentAssets: inputs.currentAssets + inputs.extraInvestment,
     monthlyContribution: inputs.monthlyContribution,
     targetAssets: inputs.targetAssets,
     annualRate: inputs.standardRate,
   });
+
+  output.daysSavedLabel.textContent =
+    inputs.extraInvestment > 0 ? `${formatShortMoney(inputs.extraInvestment)}短縮効果` : "追加投資短縮効果";
 
   if (!standardResult.reached && !boosted.reached) {
     output.daysSaved.textContent = "算出不可";
@@ -523,7 +548,13 @@ function render() {
 }
 
 Object.values(fields).forEach((field) => {
-  field.addEventListener("input", render);
+  field.addEventListener("input", () => {
+    if (moneyFields.includes(field)) {
+      formatMoneyInput(field);
+    }
+    render();
+  });
 });
 
+moneyFields.forEach(formatMoneyInput);
 render();
