@@ -51,6 +51,17 @@ function readInputs() {
   };
 }
 
+function interpolateAchievementDays(previousAssets, currentAssets, targetAssets, month) {
+  const monthlyGain = currentAssets - previousAssets;
+  if (monthlyGain <= 0) {
+    return month * DAYS_PER_MONTH;
+  }
+
+  const monthProgress = (targetAssets - previousAssets) / monthlyGain;
+  const clampedProgress = Math.min(1, Math.max(0, monthProgress));
+  return (month - 1 + clampedProgress) * DAYS_PER_MONTH;
+}
+
 function simulate({ currentAssets, monthlyContribution, targetAssets, annualRate }) {
   let assets = currentAssets;
   let principal = currentAssets;
@@ -82,6 +93,7 @@ function simulate({ currentAssets, monthlyContribution, targetAssets, annualRate
   }
 
   for (let month = 1; month <= MAX_MONTHS; month += 1) {
+    const previousAssets = assets;
     assets = assets * (1 + monthlyRate) + monthlyContribution;
     principal += monthlyContribution;
     history.push({
@@ -92,10 +104,11 @@ function simulate({ currentAssets, monthlyContribution, targetAssets, annualRate
     });
 
     if (assets >= targetAssets) {
+      const days = interpolateAchievementDays(previousAssets, assets, targetAssets, month);
       return {
         reached: true,
         months: month,
-        days: month * DAYS_PER_MONTH,
+        days,
         finalAssets: assets,
         principal,
         gain: assets - principal,
@@ -205,6 +218,14 @@ function formatPeriod(days) {
   return parts.join("");
 }
 
+function formatDaysSaved(days) {
+  const savedDays = Math.max(0, days);
+  if (savedDays > 0 && savedDays < 1) {
+    return "1日未満";
+  }
+  return `${Math.round(savedDays)}日`;
+}
+
 function getAchievementDate(result) {
   if (!result.reached) {
     return null;
@@ -240,8 +261,7 @@ function updateMainResults(inputs, standardResult) {
   } else if (!standardResult.reached && boosted.reached) {
     output.daysSaved.textContent = "到達可能に改善";
   } else {
-    const saved = Math.max(0, Math.round(standardResult.days - boosted.days));
-    output.daysSaved.textContent = `${saved}日`;
+    output.daysSaved.textContent = formatDaysSaved(standardResult.days - boosted.days);
   }
 
   output.finalAssets.textContent = standardResult.reached
