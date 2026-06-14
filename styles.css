@@ -83,12 +83,12 @@ input {
 }
 
 .layout-grid {
-  grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+  grid-template-columns: 1fr;
   align-items: stretch;
 }
 
 .content-grid {
-  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+  grid-template-columns: 1fr;
   margin-top: 18px;
 }
 
@@ -126,16 +126,38 @@ input {
 
 .field-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: 1fr;
+  gap: 12px;
 }
 
 .field {
   display: grid;
-  gap: 8px;
+  grid-template-columns: minmax(132px, 0.42fr) minmax(0, 0.58fr);
+  align-items: center;
+  gap: 14px;
   color: var(--muted);
   font-size: 13px;
   font-weight: 700;
+}
+
+.field > span:first-child {
+  line-height: 1.45;
+}
+
+.input-subsection {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+
+.subsection-label {
+  margin: 0;
+  color: var(--teal);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
 }
 
 .input-wrap {
@@ -170,7 +192,7 @@ input {
 .result-panel {
   display: grid;
   align-content: space-between;
-  gap: 22px;
+  gap: 12px;
   background: #17211f;
   color: #f8fbf8;
 }
@@ -184,7 +206,14 @@ input {
 .hero-metric {
   display: grid;
   gap: 8px;
-  padding: 18px 0 26px;
+  padding: 4px 0 10px;
+}
+
+.metric-heading-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .metric-label {
@@ -199,8 +228,15 @@ input {
 }
 
 #target-date-note {
-  color: var(--muted);
-  font-size: 14px;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.result-panel #target-date-note {
+  color: rgba(169, 217, 202, 0.76);
 }
 
 .metric-grid {
@@ -270,36 +306,6 @@ td {
   background: var(--dot-color);
 }
 
-.breakdown-list {
-  display: grid;
-  gap: 12px;
-  margin: 0;
-}
-
-.breakdown-list div {
-  display: grid;
-  gap: 5px;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 12px;
-}
-
-.breakdown-list div:last-child {
-  border-bottom: 0;
-  padding-bottom: 0;
-}
-
-.breakdown-list dt {
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.breakdown-list dd {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 850;
-}
-
 .chart-panel {
   min-width: 0;
 }
@@ -340,6 +346,43 @@ td {
   min-height: 310px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
+}
+
+.stacked-bar-hit-area {
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.stacked-bar-hit-area:focus {
+  outline: none;
+}
+
+.chart-detail {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.chart-detail div {
+  display: grid;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfdfb;
+  padding: 10px 12px;
+}
+
+.chart-detail span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.chart-detail strong {
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.25;
 }
 
 svg {
@@ -417,18 +460,11 @@ svg {
     gap: 12px;
   }
 
-  .layout-grid {
-    display: flex;
-    flex-direction: column;
-  }
-
   .result-panel {
-    order: -1;
     min-height: 0;
     gap: 16px;
   }
 
-  .field-grid,
   .metric-grid {
     grid-template-columns: 1fr;
   }
@@ -452,12 +488,21 @@ svg {
     gap: 12px;
   }
 
+  .field {
+    grid-template-columns: minmax(104px, 0.4fr) minmax(0, 0.6fr);
+    gap: 10px;
+  }
+
   .input-wrap {
     padding: 9px 11px;
   }
 
   .hero-metric {
-    padding: 4px 0 6px;
+    padding: 4px 0 2px;
+  }
+
+  .metric-heading-row {
+    align-items: flex-start;
   }
 
   .hero-metric strong {
@@ -473,6 +518,10 @@ svg {
   .metric-card strong {
     margin-top: 8px;
     font-size: 26px;
+  }
+
+  .chart-detail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .table-wrap {
@@ -539,14 +588,6 @@ svg {
     font-size: 12px;
     font-weight: 800;
     text-align: left;
-  }
-
-  .breakdown-list {
-    gap: 10px;
-  }
-
-  .breakdown-list dd {
-    font-size: 21px;
   }
 
   .chart-legend {

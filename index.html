@@ -50,14 +50,6 @@
             </label>
 
             <label class="field">
-              <span>短縮効果の追加投資額</span>
-              <span class="input-wrap">
-                <input id="extra-investment" name="extraInvestment" type="text" inputmode="numeric" pattern="[0-9,]*" value="10,000" required>
-                <span>円</span>
-              </span>
-            </label>
-
-            <label class="field">
               <span>目標資産額</span>
               <span class="input-wrap">
                 <input id="target-assets" name="targetAssets" type="text" inputmode="numeric" pattern="[0-9,]*" value="100,000,000" required>
@@ -89,18 +81,26 @@
               </span>
             </label>
           </div>
+
+          <div class="input-subsection">
+            <p class="subsection-label">短縮効果</p>
+            <label class="field">
+              <span>追加投資額</span>
+              <span class="input-wrap">
+                <input id="extra-investment" name="extraInvestment" type="text" inputmode="numeric" pattern="[0-9,]*" value="10,000" required>
+                <span>円</span>
+              </span>
+            </label>
+          </div>
         </form>
 
         <section class="result-panel" aria-live="polite">
-          <div class="section-heading">
-            <p class="eyebrow">Countdown</p>
-            <h2>現在の想定では</h2>
-          </div>
-
           <div class="hero-metric">
-            <span class="metric-label">達成予定日</span>
+            <div class="metric-heading-row">
+              <span class="metric-label">達成予定日</span>
+              <span id="target-date-note">標準シナリオ</span>
+            </div>
             <strong id="target-date">-</strong>
-            <span id="target-date-note">標準シナリオで算出</span>
           </div>
 
           <div class="metric-grid">
@@ -137,26 +137,6 @@
           </div>
         </section>
 
-        <section class="panel">
-          <div class="section-heading">
-            <p class="eyebrow">Breakdown</p>
-            <h2>達成時の内訳</h2>
-          </div>
-          <dl class="breakdown-list">
-            <div>
-              <dt>達成時資産</dt>
-              <dd id="final-assets">-</dd>
-            </div>
-            <div>
-              <dt>累計元本</dt>
-              <dd id="total-principal">-</dd>
-            </div>
-            <div>
-              <dt>運用益</dt>
-              <dd id="investment-gain">-</dd>
-            </div>
-          </dl>
-        </section>
       </section>
 
       <section class="chart-grid">
@@ -172,6 +152,7 @@
           <div class="chart-box">
             <svg id="stacked-chart" role="img" aria-label="標準シナリオの元本と運用益の推移"></svg>
           </div>
+          <div class="chart-detail" id="stacked-chart-detail" aria-live="polite" hidden></div>
         </section>
 
         <section class="panel chart-panel">

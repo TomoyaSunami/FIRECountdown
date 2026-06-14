@@ -30,12 +30,10 @@ const output = {
   remainingPeriod: document.querySelector("#remaining-period"),
   daysSavedLabel: document.querySelector("#days-saved-label"),
   daysSaved: document.querySelector("#days-saved"),
-  finalAssets: document.querySelector("#final-assets"),
-  totalPrincipal: document.querySelector("#total-principal"),
-  investmentGain: document.querySelector("#investment-gain"),
   scenarioBody: document.querySelector("#scenario-body"),
   scenarioLegend: document.querySelector("#scenario-legend"),
   stackedChart: document.querySelector("#stacked-chart"),
+  stackedChartDetail: document.querySelector("#stacked-chart-detail"),
   scenarioChart: document.querySelector("#scenario-chart"),
 };
 
@@ -261,7 +259,7 @@ function updateMainResults(inputs, standardResult) {
   if (standardResult.reached) {
     output.targetDate.textContent = formatDate(date);
     output.targetDateNote.textContent =
-      standardResult.months === 0 ? "目標資産額に到達済み" : "標準シナリオで算出";
+      standardResult.months === 0 ? "目標資産額に到達済み" : "標準シナリオ";
     output.remainingPeriod.textContent = formatPeriod(standardResult.days);
   } else {
     output.targetDate.textContent = "到達見込みなし";
@@ -288,12 +286,6 @@ function updateMainResults(inputs, standardResult) {
   } else {
     output.daysSaved.textContent = formatDaysSaved(standardResult.days - boosted.days);
   }
-
-  output.finalAssets.textContent = standardResult.reached
-    ? formatMoney(standardResult.finalAssets)
-    : "到達見込みなし";
-  output.totalPrincipal.textContent = formatMoney(standardResult.principal);
-  output.investmentGain.textContent = formatMoney(standardResult.gain);
 }
 
 function updateScenarioTable(scenarios) {
@@ -389,10 +381,40 @@ function compactMoney(value) {
   return `${Math.round(value).toLocaleString("ja-JP")}`;
 }
 
+function formatChartPointLabel(point) {
+  if (point.month === 0) {
+    return "現在";
+  }
+  return `${Math.round(point.month / 12)}年後`;
+}
+
+function showStackedChartDetail(point) {
+  output.stackedChartDetail.hidden = false;
+  output.stackedChartDetail.innerHTML = `
+    <div>
+      <span>時点</span>
+      <strong>${formatChartPointLabel(point)}</strong>
+    </div>
+    <div>
+      <span>元本</span>
+      <strong>${formatMoney(point.principal)}</strong>
+    </div>
+    <div>
+      <span>運用益</span>
+      <strong>${formatMoney(point.gain)}</strong>
+    </div>
+    <div>
+      <span>総資産</span>
+      <strong>${formatMoney(point.assets)}</strong>
+    </div>
+  `;
+}
+
 function drawStackedChart(result) {
   const svg = output.stackedChart;
   clearSvg(svg);
   setViewBox(svg, 720, 320);
+  output.stackedChartDetail.hidden = true;
 
   if (!result.history.length) {
     return;
@@ -414,6 +436,8 @@ function drawStackedChart(result) {
     const gainHeight = (Math.max(0, point.gain) / maxValue) * plot.height;
     const principalY = plot.bottom - principalHeight;
     const gainY = principalY - gainHeight;
+    const barTop = Math.min(principalY, gainY);
+    const barHeight = Math.max(8, plot.bottom - barTop);
 
     svg.append(
       createSvgElement("rect", {
@@ -435,6 +459,48 @@ function drawStackedChart(result) {
         fill: scenarioMeta.pessimistic.color,
       }),
     );
+
+    const selection = createSvgElement("rect", {
+      x: x - 3,
+      y: barTop - 3,
+      width: barWidth + 6,
+      height: barHeight + 6,
+      rx: 5,
+      fill: "none",
+      stroke: "#17211f",
+      "stroke-width": "2",
+      opacity: "0",
+      class: "stacked-bar-selection",
+    });
+    svg.append(selection);
+
+    const activate = () => {
+      svg.querySelectorAll(".stacked-bar-selection").forEach((node) => {
+        node.setAttribute("opacity", "0");
+      });
+      selection.setAttribute("opacity", "1");
+      showStackedChartDetail(point);
+    };
+
+    const hitArea = createSvgElement("rect", {
+      x: x - barGap / 2,
+      y: plot.top,
+      width: barWidth + barGap,
+      height: plot.height,
+      fill: "transparent",
+      tabindex: "0",
+      role: "button",
+      "aria-label": `${formatChartPointLabel(point)} 元本 ${formatMoney(point.principal)} 運用益 ${formatMoney(point.gain)}`,
+      class: "stacked-bar-hit-area",
+    });
+    hitArea.addEventListener("pointerdown", activate);
+    hitArea.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        activate();
+      }
+    });
+    svg.append(hitArea);
 
     if (index === 0 || index === data.length - 1 || point.month % 60 === 0) {
       addText(svg, `${Math.round(point.month / 12)}年`, {
