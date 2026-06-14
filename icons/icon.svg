@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="FIRE Countdown icon">
+  <rect width="512" height="512" rx="112" fill="#17211f"/>
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#23b083" stroke-width="34"/>
+  <path d="M256 112v144l86 68" fill="none" stroke="#f5f7f2" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M146 366c40 36 78 54 110 54s70-18 110-54" fill="none" stroke="#ef6a4d" stroke-width="30" stroke-linecap="round"/>
+  <circle cx="256" cy="256" r="19" fill="#f5f7f2"/>
+</svg>
