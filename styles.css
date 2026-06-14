@@ -348,6 +348,10 @@ td {
   overscroll-behavior-x: contain;
 }
 
+.scenario-chart-box {
+  min-height: 370px;
+}
+
 .stacked-bar-hit-area {
   cursor: pointer;
   pointer-events: all;
@@ -392,7 +396,7 @@ svg {
 }
 
 #scenario-chart {
-  height: 340px;
+  height: 370px;
 }
 
 .axis-label {
@@ -612,6 +616,12 @@ svg {
   svg {
     height: 260px;
     min-height: 260px;
+  }
+
+  .scenario-chart-box,
+  #scenario-chart {
+    height: 370px;
+    min-height: 370px;
   }
 
   svg {

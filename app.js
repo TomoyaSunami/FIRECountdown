@@ -542,7 +542,7 @@ function formatAchievementMonthLabel(days) {
 function drawScenarioChart(scenarios, targetAssets) {
   const svg = output.scenarioChart;
   clearSvg(svg);
-  setViewBox(svg, 720, 340);
+  setViewBox(svg, 720, 370);
 
   const histories = scenarios.map((scenario) => ({
     ...scenario,
@@ -555,6 +555,8 @@ function drawScenarioChart(scenarios, targetAssets) {
   }
 
   const plot = { left: 68, right: 694, top: 26, bottom: 258 };
+  const axisLabelY = 284;
+  const achievementLabelStartY = 312;
   plot.width = plot.right - plot.left;
   plot.height = plot.bottom - plot.top;
   const maxMonth = Math.max(...allPoints.map((point) => point.month), 1);
@@ -606,6 +608,7 @@ function drawScenarioChart(scenarios, targetAssets) {
       const achievementMonth = result.days / DAYS_PER_MONTH;
       const x = plot.left + (achievementMonth / maxMonth) * plot.width;
       const labelX = Math.min(plot.right - 4, Math.max(plot.left + 4, x));
+      const labelY = achievementLabelStartY + index * 16;
       const textAnchor = labelX > plot.right - 80 ? "end" : labelX < plot.left + 80 ? "start" : "middle";
 
       svg.append(
@@ -613,7 +616,7 @@ function drawScenarioChart(scenarios, targetAssets) {
           x1: x,
           y1: plot.top,
           x2: x,
-          y2: plot.bottom,
+          y2: labelY - 10,
           stroke: meta.color,
           "stroke-width": "2",
           "stroke-dasharray": "5 7",
@@ -622,9 +625,9 @@ function drawScenarioChart(scenarios, targetAssets) {
         }),
       );
 
-      addText(svg, `${meta.label} ${formatAchievementMonthLabel(result.days)}`, {
+      addText(svg, formatAchievementMonthLabel(result.days), {
         x: labelX,
-        y: 304 + index * 14,
+        y: labelY,
         "text-anchor": textAnchor,
         fill: meta.color,
         class: "achievement-axis-label",
@@ -635,7 +638,7 @@ function drawScenarioChart(scenarios, targetAssets) {
     const x = plot.left + (month / maxMonth) * plot.width;
     addText(svg, `${Math.round(month / 12)}年`, {
       x,
-      y: 282,
+      y: axisLabelY,
       "text-anchor": index === 0 ? "start" : index === 2 ? "end" : "middle",
       class: "axis-label",
     });

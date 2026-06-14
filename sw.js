@@ -1,4 +1,4 @@
-const CACHE_NAME = "fire-countdown-v20";
+const CACHE_NAME = "fire-countdown-v25";
 const APP_SHELL = [
   "./",
   "./index.html",
