@@ -1,5 +1,6 @@
 const DAYS_PER_MONTH = 30.4375;
 const MAX_MONTHS = 1200;
+const STORAGE_KEY = "fire-countdown-inputs";
 
 const scenarioMeta = {
   optimistic: { label: "楽観", color: "#23b083" },
@@ -23,6 +24,8 @@ const moneyFields = [
   fields.extraInvestment,
   fields.targetAssets,
 ];
+
+const fieldEntries = Object.entries(fields);
 
 const output = {
   validationPanel: document.querySelector("#validation-panel"),
@@ -729,14 +732,50 @@ function render() {
   drawScenarioChart(scenarios, inputs.targetAssets);
 }
 
+function restoreSavedInputs() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    if (!saved || typeof saved !== "object" || Array.isArray(saved)) {
+      return;
+    }
+
+    fieldEntries.forEach(([key, field]) => {
+      if (typeof saved[key] === "string") {
+        field.value = saved[key];
+      }
+    });
+  } catch {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Ignore storage cleanup failures.
+    }
+  }
+}
+
+function saveInputs() {
+  try {
+    const values = Object.fromEntries(
+      fieldEntries.map(([key, field]) => [key, field.value]),
+    );
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
+  } catch {
+    // Storage may be unavailable in private browsing or restricted webviews.
+  }
+}
+
+restoreSavedInputs();
+
 Object.values(fields).forEach((field) => {
   field.addEventListener("input", () => {
     if (moneyFields.includes(field)) {
       formatMoneyInput(field);
     }
+    saveInputs();
     render();
   });
 });
 
 moneyFields.forEach(formatMoneyInput);
+saveInputs();
 render();
