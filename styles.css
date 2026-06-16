@@ -180,12 +180,69 @@ input {
   padding-top: 16px;
 }
 
+.subsection-title-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .subsection-label {
   margin: 0;
   color: var(--teal);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
+}
+
+.info-disclosure {
+  line-height: 1;
+}
+
+.info-disclosure summary {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(20, 127, 114, 0.28);
+  border-radius: 50%;
+  background: rgba(35, 176, 131, 0.1);
+  color: var(--teal);
+  cursor: pointer;
+  list-style: none;
+}
+
+.info-disclosure summary::-webkit-details-marker {
+  display: none;
+}
+
+.info-disclosure summary:focus-visible {
+  outline: 3px solid rgba(35, 176, 131, 0.24);
+  outline-offset: 2px;
+}
+
+.info-icon {
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.info-tooltip {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 8px);
+  left: 0;
+  width: min(300px, calc(100vw - 48px));
+  margin: 0;
+  border: 1px solid rgba(20, 127, 114, 0.18);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(23, 33, 31, 0.14);
+  padding: 10px 12px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.65;
 }
 
 .input-wrap {
